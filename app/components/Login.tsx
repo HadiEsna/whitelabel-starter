@@ -2,10 +2,12 @@
 import {useEffect, useState} from 'react';
 import {useLoginWithEmail, useLoginWithSms, useGuestAccounts, usePrivy} from '@privy-io/react-auth';
 import OAuth from './OAuth';
+import BackendLoginButton from './BackendLoginButton';
+import VerifyBackendJwtButton from './VerifyBackendJwtButton';
 
 const Login = () => {
   const {createGuestAccount} = useGuestAccounts();
-  const {ready, authenticated, logout} = usePrivy();
+  const {ready, authenticated, logout, user} = usePrivy();
 
   /**
    * Logic for using whitelabel email auth
@@ -44,14 +46,23 @@ const Login = () => {
     }
   }, [stateEmail]);
 
+  // Show Privy login information in console when logged in
+  useEffect(() => {
+    if (ready && authenticated) {
+      console.log('Privy user authenticated:', {
+        id: user?.id,
+        email: user?.email?.address,
+        phone: user?.phone?.number,
+        wallet: user?.wallet,
+        linkedAccounts: user?.linkedAccounts,
+      });
+    }
+  }, [ready, authenticated, user]);
+
   /**
    * Logic for using whitelabel sms Auth
    */
-  const {
-    sendCode: sendCodeSms,
-    loginWithCode: loginWithCodeSms,
-    state: stateSms,
-  } = useLoginWithSms({
+  const { sendCode: sendCodeSms, loginWithCode: loginWithCodeSms, state: stateSms } = useLoginWithSms({
     onComplete: ({ user, isNewUser, wasAlreadyAuthenticated, loginMethod }) => {
       console.log('🔑 ✅ User successfully logged in with Sms', {
         user,
@@ -90,7 +101,7 @@ const Login = () => {
       </div>
       <div className="mt-4 p-4">
         <div className="flex flex-col">
-          <div className="flex justify-center gap-3">
+          <div className="flex justify-center gap-3 flex-wrap">
             <button
               onClick={() => {
                 console.log('click');
@@ -105,6 +116,9 @@ const Login = () => {
                 <div className="btn-text text-black">Logout</div>
               </button>
             )}
+            {/* Button to login into the backend (exchange Privy token for app JWT) */}
+            <BackendLoginButton />
+            <VerifyBackendJwtButton />
           </div>
           <div>
             <h2 className="text-xl font-bold mb-4 text-left">Email</h2>
