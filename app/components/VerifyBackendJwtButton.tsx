@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 export default function VerifyBackendJwtButton() {
   const [result, setResult] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<{user_id:number; role_id:number} | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleVerify = async () => {
@@ -21,7 +22,24 @@ export default function VerifyBackendJwtButton() {
         }
       });
       if (res.ok) {
-        setResult('Backend verification success (verify_auth).');
+        // Decode user_id / role_id locally from the JWT (server already validated signature)
+        try {
+          const token = jwt;
+          const payloadSeg = token.split('.')[1];
+          const b64 = payloadSeg.replace(/-/g, '+').replace(/_/g, '/');
+          // pad base64
+          const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
+          const jsonStr = atob(padded);
+          const payload = JSON.parse(jsonStr);
+          if (typeof payload.user_id === 'number' && typeof payload.role_id === 'number') {
+            setUserInfo({ user_id: payload.user_id, role_id: payload.role_id });
+            setResult(`Backend verification success. user_id=${payload.user_id}`);
+          } else {
+            setResult('Backend verification success, but could not parse user_id in payload.');
+          }
+        } catch (e) {
+          setResult('Backend verification success, but local decode failed.');
+        }
       } else {
         const text = await res.text();
         setResult(`Backend verification failed: ${text}`);
@@ -51,6 +69,9 @@ export default function VerifyBackendJwtButton() {
         <div className="btn-text">{loading ? 'Verifying…' : 'Verify Backend JWT'}</div>
       </button>
       {result && <p className="text-xs break-all max-w-xs">{result}</p>}
+      {userInfo && (
+        <div className="text-xs text-gray-500">Role ID: {userInfo.role_id}</div>
+      )}
     </div>
   );
 }
