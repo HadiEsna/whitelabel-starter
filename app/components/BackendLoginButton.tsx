@@ -25,7 +25,7 @@ export default function BackendLoginButton() {
       if (!identityToken) throw new Error('No Identity access token');
 
 
-      const res = await fetch('http://127.0.0.1:6167/parti_v2/auth/login_privy', {
+      const res = await fetch('https://api-backend.firstlookforyou.com/parti_v2/auth/login_privy', {
         method: 'POST',
         headers: {'Content-Type': 'application/json',
             'accept': 'application/json',

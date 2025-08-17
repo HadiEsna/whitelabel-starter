@@ -14,7 +14,7 @@ export default function VerifyBackendJwtButton() {
     }
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:6167/parti_v2/verify_auth', {
+      const res = await fetch('https://api-backend.firstlookforyou.com/parti_v2/verify_auth', {
         method: 'GET',
         headers: {
           'accept': 'application/json',
