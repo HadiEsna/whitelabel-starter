@@ -2,7 +2,7 @@
 
 import {useState, useEffect} from 'react';
 import {usePrivy, useIdentityToken} from '@privy-io/react-auth';
-
+import {BACKEND_BASE_URL} from '../config';
 export default function BackendLoginButton() {
   const {ready, authenticated, getAccessToken, user} = usePrivy();
   const { identityToken } = useIdentityToken();
@@ -25,7 +25,7 @@ export default function BackendLoginButton() {
       if (!identityToken) throw new Error('No Identity access token');
 
 
-      const res = await fetch('https://api-backend.firstlookforyou.com/parti_v2/auth/login_privy', {
+  const res = await fetch(`${BACKEND_BASE_URL}/auth/login_privy`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json',
             'accept': 'application/json',
