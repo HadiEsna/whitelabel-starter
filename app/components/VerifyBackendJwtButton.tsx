@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { BACKEND_BASE_URL } from '../config';
 
 export default function VerifyBackendJwtButton() {
   const [result, setResult] = useState<string | null>(null);
@@ -14,7 +15,7 @@ export default function VerifyBackendJwtButton() {
     }
     setLoading(true);
     try {
-      const res = await fetch('https://api-backend.firstlookforyou.com/parti_v2/verify_auth', {
+  const res = await fetch(`${BACKEND_BASE_URL}/verify_auth`, {
         method: 'GET',
         headers: {
           'accept': 'application/json',
